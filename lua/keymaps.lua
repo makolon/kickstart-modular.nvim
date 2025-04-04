@@ -8,6 +8,60 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Open a file via Telescope and reveal it in Neo-tree
+vim.keymap.set('n', '<leader>ef', function()
+  local builtin = require 'telescope.builtin'
+  builtin.find_files {
+    attach_mappings = function(_, map)
+      map('i', '<CR>', function(prompt_bufnr)
+        local actions = require 'telescope.actions'
+        local action_state = require 'telescope.actions.state'
+        local entry = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+
+        -- Open the selected file
+        vim.cmd('edit ' .. entry.path)
+
+        -- Reveal the file location in Neo-tree
+        vim.cmd 'Neotree reveal'
+      end)
+      return true
+    end,
+  }
+end, { desc = 'Find file and reveal in Neo-tree' })
+
+-- Open Telescope file browser, and reveal the selected directory in Neo-tree
+vim.keymap.set('n', '<leader>ed', function()
+  local fb = require('telescope').extensions.file_browser
+  fb.file_browser {
+    prompt_title = 'Browse Directories',
+    select_buffer = true,
+    depth = 1,
+    hijack_netrw = false,
+    attach_mappings = function(_, map)
+      map('i', '<CR>', function(prompt_bufnr)
+        local actions = require 'telescope.actions'
+        local action_state = require 'telescope.actions.state'
+        local entry = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+
+        -- If selected is a file, extract its parent directory
+        local path = entry.path or entry.filename
+        local dir = vim.fn.isdirectory(path) == 1 and path or vim.fn.fnamemodify(path, ':h')
+
+        -- Reveal that directory in Neo-tree
+        vim.cmd('Neotree reveal dir=' .. dir)
+      end)
+      return true
+    end,
+  }
+end, { desc = 'Browse and reveal directory in Neo-tree' })
+
+-- Move between buffers (VSCode-style tab switching)
+vim.keymap.set('n', '<Tab>', ':bnext<CR>', { desc = 'Next buffer' })
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { desc = 'Previous buffer' })
+vim.keymap.set('n', '<leader>bd', ':bdelete<CR>', { desc = 'Close current buffer' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.

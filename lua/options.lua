@@ -62,4 +62,7 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
--- vim: ts=2 sts=2 sw=2 et
+-- Remove the default shada file
+vim.opt.shada:remove '<'
+-- Set the shada to store the last 10000 lines of history
+vim.opt.shada:append '<10000'

@@ -99,4 +99,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- vim: ts=2 sts=2 sw=2 et
+-- Bufferline keymaps
+vim.keymap.set('n', '<leader>wl', '<CMD>BufferLineCloseRight<CR>')
+vim.keymap.set('n', '<leader>wh', '<CMD>BufferLineCloseLeft<CR>')
+vim.keymap.set('n', '<leader>wall', '<CMD>BufferLineCloseOthers<CR>')
+vim.keymap.set('n', '<leader>we', '<CMD>BufferLinePickClose<CR>')

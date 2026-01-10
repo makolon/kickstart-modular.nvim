@@ -128,11 +128,7 @@ return {
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-<<<<<<< HEAD
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-=======
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
->>>>>>> f2309053c75046d5e33084938ef9bba66d9e427e
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -159,11 +155,7 @@ return {
           -- code, if the language server you are using supports them
           --
           -- This may be unwanted, since they displace some of your code
-<<<<<<< HEAD
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-=======
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
->>>>>>> f2309053c75046d5e33084938ef9bba66d9e427e
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')

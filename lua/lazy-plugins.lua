@@ -20,11 +20,7 @@ require('lazy').setup({
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
 
-<<<<<<< HEAD
-  -- modular approach: using `require 'path/name'` will
-=======
   -- modular approach: using `require 'path.name'` will
->>>>>>> f2309053c75046d5e33084938ef9bba66d9e427e
   -- include a plugin definition from file lua/path/name.lua
 
   require 'kickstart.plugins.gitsigns',

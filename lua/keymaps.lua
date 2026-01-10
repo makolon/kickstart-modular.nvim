@@ -7,7 +7,7 @@ local map = vim.keymap.set
 map('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostics: open [L]ocation list' })
 
 -- --------------------------------------------------------------------
 -- Explorer / Finder (Oil + Telescope)
@@ -47,20 +47,8 @@ end, { desc = 'Open directory (Oil)' })
 -- Buffers
 -- --------------------------------------------------------------------
 
--- If sidekick.nvim is installed, avoid mapping <Tab>/<S-Tab> in normal mode
--- because sidekick often uses <Tab> for suggestions.
-local has_sidekick = pcall(require, 'sidekick')
-
-if not has_sidekick then
-  -- Move between buffers (VSCode-style tab switching)
-  map('n', '<Tab>', ':bnext<CR>', { desc = 'Next buffer' })
-  map('n', '<S-Tab>', ':bprevious<CR>', { desc = 'Previous buffer' })
-else
-  -- Safe defaults when sidekick exists
-  map('n', ']b', ':bnext<CR>', { desc = 'Next buffer' })
-  map('n', '[b', ':bprevious<CR>', { desc = 'Previous buffer' })
-end
-
+map('n', '<Tab>', ':bnext<CR>', { desc = 'Next buffer' })
+map('n', '<S-Tab>', ':bprevious<CR>', { desc = 'Previous buffer' })
 map('n', '<leader>bd', ':bdelete<CR>', { desc = 'Close current buffer' })
 
 -- Exit terminal mode in the builtin terminal
@@ -95,4 +83,3 @@ map('n', '<leader>wl', '<CMD>BufferLineCloseRight<CR>', { desc = 'BufferLine: cl
 map('n', '<leader>wh', '<CMD>BufferLineCloseLeft<CR>', { desc = 'BufferLine: close to the left' })
 map('n', '<leader>wall', '<CMD>BufferLineCloseOthers<CR>', { desc = 'BufferLine: close others' })
 map('n', '<leader>we', '<CMD>BufferLinePickClose<CR>', { desc = 'BufferLine: pick close' })
-

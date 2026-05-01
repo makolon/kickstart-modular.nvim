@@ -6,7 +6,8 @@ return {
       require('smart-splits').setup {
         -- Customize settings as needed
         default_amount = 5, -- Default resize amount
-        at_edge = 'wrap', -- Behavior at window edges
+        multiplexer_integration = 'kitty', -- Declear the used multiplexer
+        at_edge = 'stop', -- Behavior at window edges
       }
 
       -- Set key mappings (examples)

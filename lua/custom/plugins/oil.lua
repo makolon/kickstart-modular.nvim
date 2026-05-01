@@ -9,8 +9,7 @@ return {
   cmd = { 'Oil' },
 
   keys = {
-    { '-', '<cmd>Oil<cr>', desc = 'Oil: Open parent directory' },
-    { '<leader>o', '<cmd>Oil<cr>', desc = 'Oil: Open' },
+    { '-', '<cmd>Oil<cr>', desc = 'Oil: open parent directory' },
   },
 
   config = function()

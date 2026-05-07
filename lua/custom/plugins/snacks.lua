@@ -12,6 +12,17 @@ return {
       preset = {
         keys = {
           { icon = ' ', key = 'f', desc = 'Find File',     action = ':Telescope find_files' },
+          { icon = ' ', key = 'o', desc = 'Open Folder',   action = function()
+              local path = vim.fn.input({ prompt = 'Open folder: ', default = vim.fn.getcwd() .. '/', completion = 'dir' })
+              if path == nil or path == '' then return end
+              path = vim.fn.fnamemodify(path, ':p')
+              if vim.fn.isdirectory(path) ~= 1 then
+                vim.notify('Not a directory: ' .. path, vim.log.levels.WARN)
+                return
+              end
+              vim.cmd('cd ' .. vim.fn.fnameescape(path))
+              vim.cmd('Neotree show dir=' .. vim.fn.fnameescape(path))
+            end },
           { icon = ' ', key = 'r', desc = 'Recent Files',  action = ':Telescope oldfiles' },
           { icon = ' ', key = 'g', desc = 'Find Text',     action = ':Telescope live_grep' },
           { icon = ' ', key = 'c', desc = 'Config',        action = ":lua require('telescope.builtin').find_files({ cwd = vim.fn.stdpath('config') })" },

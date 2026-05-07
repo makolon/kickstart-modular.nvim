@@ -38,13 +38,13 @@ map('n', '<leader>xq', vim.diagnostic.setloclist, { desc = 'Diagnostics: locatio
 map('n', '[d', function() vim.diagnostic.jump { count = -1, float = true } end, { desc = 'Prev diagnostic' })
 map('n', ']d', function() vim.diagnostic.jump { count = 1, float = true } end, { desc = 'Next diagnostic' })
 
--- ── Explorer (oil) ─────────────────────────────────────────────────
+-- ── Explorer ───────────────────────────────────────────────────────
 -- <leader>e   open oil in the *current* window (vim-vinegar style)
 -- <leader>E   same, but at cwd
--- <leader>fe / \   toggle a persistent oil sidebar on the left (30 cols)
---   Inside the sidebar: <CR> opens in the sidebar window itself, so use
---   <C-s> (vsplit), <C-h> (hsplit), or <C-t> (new tab) to open files
---   without losing the sidebar.
+-- <leader>fe / \   toggle a neo-tree sidebar on the left
+--   Inside neo-tree: <CR>/o opens the file in the previously-focused
+--   window (the main editor), <C-s> (vsplit), <C-h> (hsplit),
+--   <C-t> (new tab).
 local function oil_dir_for_current_buf()
   local bufname = vim.api.nvim_buf_get_name(0)
   return bufname == '' and vim.fn.getcwd() or vim.fn.fnamemodify(bufname, ':p:h')
@@ -64,32 +64,8 @@ map('n', '<leader>E', function()
   if ok then oil.open(vim.fn.getcwd()) end
 end, { desc = 'Explorer (oil) at cwd' })
 
-local function toggle_oil_sidebar()
-  -- If an oil window is already open, close it.
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    if vim.bo[buf].filetype == 'oil' then
-      vim.api.nvim_win_close(win, false)
-      return
-    end
-  end
-
-  local ok, oil = pcall(require, 'oil')
-  if not ok then
-    vim.notify('oil.nvim is not available', vim.log.levels.WARN)
-    return
-  end
-
-  local dir = oil_dir_for_current_buf()
-  vim.cmd 'topleft 30vsplit'
-  vim.wo.winfixwidth = true
-  vim.wo.number = false
-  vim.wo.relativenumber = false
-  oil.open(dir)
-end
-
-map('n', '<leader>fe', toggle_oil_sidebar, { desc = 'Explorer: toggle oil sidebar' })
-map('n', '\\',          toggle_oil_sidebar, { desc = 'Explorer: toggle oil sidebar' })
+map('n', '<leader>fe', '<cmd>Neotree toggle reveal<CR>', { desc = 'Explorer: toggle neo-tree sidebar' })
+map('n', '\\',         '<cmd>Neotree toggle reveal<CR>', { desc = 'Explorer: toggle neo-tree sidebar' })
 
 -- ── Buffers ────────────────────────────────────────────────────────
 map('n', '<Tab>',   '<cmd>bnext<CR>',     { desc = 'Next buffer' })

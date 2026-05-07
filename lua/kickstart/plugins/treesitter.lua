@@ -1,6 +1,7 @@
 return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs',
     dependencies = {
@@ -61,4 +62,3 @@ return {
     },
   },
 }
--- vim: ts=2 sts=2 sw=2 et

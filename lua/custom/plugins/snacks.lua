@@ -8,11 +8,6 @@ return {
   opts = {
     bigfile = { enabled = true },     -- disable expensive features for huge files
     quickfile = { enabled = true },   -- render the file before plugins load
-    words = { enabled = true },       -- highlight LSP references under cursor
-    scope = { enabled = true },       -- treesitter-aware scope textobject (ii/ai/[i/]i)
-    scratch = { enabled = true },     -- :lua Snacks.scratch() — per-cwd scratch buffer
-    input = { enabled = true },       -- replace vim.ui.input with a floating input
-    lazygit = { enabled = true },     -- :lua Snacks.lazygit()
     dashboard = {
       preset = {
         keys = {
@@ -43,17 +38,9 @@ return {
       },
     },
     -- Modules deliberately disabled to avoid conflicts with current plugins:
-    --   notifier     (have noice + nvim-notify)
-    --   picker       (have telescope — opt in later if you want a faster fuzzy finder)
-    --   indent       (have indent-blankline)
-    --   statuscolumn (have statuscol.nvim in editing.lua)
-    --   image        (have image.nvim)
-  },
-  keys = {
-    { '<leader>.',  function() Snacks.scratch() end,        desc = 'Scratch buffer (per cwd)' },
-    { '<leader>S',  function() Snacks.scratch.select() end, desc = 'Select scratch buffer' },
-    { '<leader>gg', function() Snacks.lazygit() end,        desc = 'Lazygit (snacks)' },
-    { ']]',         function() Snacks.words.jump(vim.v.count1) end, desc = 'Next reference' },
-    { '[[',         function() Snacks.words.jump(-vim.v.count1) end, desc = 'Prev reference' },
+    --   notifier (have noice + nvim-notify)
+    --   picker   (have telescope)
+    --   indent   (have indent-blankline)
+    --   statuscolumn / scroll / scope: skip for now, can opt in later
   },
 }

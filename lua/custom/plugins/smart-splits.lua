@@ -4,9 +4,10 @@ return {
     version = '>=1.0.0', -- Specify the version if needed
     config = function()
       require('smart-splits').setup {
-        -- Customize settings as needed
-        default_amount = 5, -- Default resize amount
-        at_edge = 'wrap', -- Behavior at window edges
+        default_amount = 5,
+        multiplexer_integration = 'kitty',
+        at_edge = 'stop',
+        log_level = 'error',
       }
 
       -- Set key mappings (examples)

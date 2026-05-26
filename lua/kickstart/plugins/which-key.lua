@@ -59,9 +59,18 @@ return {
 
       -- Document existing key chains
       spec = {
+        { '<leader>f', group = '[F]ind / File' },
         { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>g', group = '[G]it' },
+        -- Note: <leader>h is shared:
+        --   gitsigns hunk ops (n/v) AND harpoon (ha = add, hh = menu)
+        { '<leader>h', group = 'Git [H]unk / [H]arpoon', mode = { 'n', 'v' } },
+        { '<leader>b', group = '[B]uffer' },
+        { '<leader>w', group = '[W]indow' },
+        { '<leader>t', group = '[T]oggle / [T]erminal' },
+        { '<leader>x', group = 'Diagnostics / Trouble' },
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>e', group = '[E]xplorer' },
       },
     },
   },

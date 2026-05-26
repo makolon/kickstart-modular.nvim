@@ -122,6 +122,223 @@ examples of adding popularly requested plugins.
 
 [The Only Video You Need to Get Started with Neovim](https://youtu.be/m8C0Cq9Uv9o)
 
+## Customizations in this fork
+
+This config has been tuned beyond stock kickstart-modular. Notable changes:
+
+**Plugins added**
+
+| Plugin | Purpose |
+| :- | :- |
+| [catppuccin/nvim](https://github.com/catppuccin/nvim) | Colorscheme (`catppuccin-mocha`) |
+| [nvim-lualine/lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) | Statusline |
+| [akinsho/bufferline.nvim](https://github.com/akinsho/bufferline.nvim) | Top buffer/tab line with diagnostics |
+| [stevearc/oil.nvim](https://github.com/stevearc/oil.nvim) | File explorer (edit filesystem like a buffer) |
+| [folke/flash.nvim](https://github.com/folke/flash.nvim) | Fast 2-char + treesitter motion |
+| [folke/trouble.nvim](https://github.com/folke/trouble.nvim) | Modern diagnostics / symbols / refs panel |
+| [folke/snacks.nvim](https://github.com/folke/snacks.nvim) | Dashboard, bigfile, quickfile (other modules disabled) |
+| [folke/noice.nvim](https://github.com/folke/noice.nvim) | Cmdline / messages / popup UI |
+| [ThePrimeagen/harpoon](https://github.com/ThePrimeagen/harpoon) (v2) | Pin & jump between project files |
+| [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) | Project-wide find & replace |
+| [nvim-treesitter/nvim-treesitter-textobjects](https://github.com/nvim-treesitter/nvim-treesitter-textobjects) | Function/class/parameter text objects |
+| [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) | Git diff UI |
+| [akinsho/toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | Floating terminal + lazygit |
+| [mrjones2014/smart-splits.nvim](https://github.com/mrjones2014/smart-splits.nvim) | Smarter window resizing |
+
+**Plugins removed from stock kickstart**: `tokyonight`, `neo-tree.nvim`, standalone `Comment.nvim`, `mini.statusline` (replaced respectively by catppuccin, oil, mini.comment, lualine).
+
+**Options enabled**: `relativenumber`, `termguicolors`, `scrolloff=8`, `expandtab`/`shiftwidth=2`, `smartindent`, no swapfile/backup, treesitter-based folding, trim trailing whitespace on save.
+
+**Treesitter languages auto-installed**: bash, c, cpp, css, json, jsonc, yaml, toml, lua, luadoc, markdown, query, regex, vim, vimdoc, python, rust, go, javascript, typescript, tsx, html, diff.
+
+## Keybindings cheat sheet
+
+> Leader key is **`<Space>`**. Press `<Space>` and wait — `which-key` shows every leader binding grouped by prefix. You almost never need to memorize the full list below.
+
+### Discoverability
+
+| Key | Action |
+| :- | :- |
+| `<Space>` (then wait) | which-key popup with every leader binding |
+| `<leader>sk` | Search all keymaps (Telescope) |
+| `<leader>sh` | Search Neovim help docs |
+| `:Tutor` | Built-in vim tutorial |
+
+### Files & explorer (oil)
+
+| Key | Action |
+| :- | :- |
+| `<leader>e` | Open oil at the current file's directory |
+| `<leader>E` | Open oil at cwd |
+| `<leader>fe` or `\` | Toggle a 30-col oil sidebar on the left |
+| `-` | Open oil at the parent directory |
+
+Inside oil: `<CR>` enter dir / open file, `<C-s>` open in vsplit, `<C-h>` hsplit, `<C-t>` new tab. Edit the buffer like text and `:w` to commit (rename / move / delete).
+
+### Search (Telescope)
+
+| Key | Action |
+| :- | :- |
+| `<leader>sf` | Search files |
+| `<leader>sg` | Live grep |
+| `<leader>sw` | Search current word |
+| `<leader>sd` | Search diagnostics |
+| `<leader>sk` | Search keymaps |
+| `<leader>sh` | Search help |
+| `<leader>sn` | Search Neovim config files |
+| `<leader>s.` | Recent files |
+| `<leader>sr` | Resume last search |
+| `<leader>/` | Fuzzy search inside current buffer |
+| `<leader><leader>` | Open buffers |
+
+### Project find & replace (Spectre)
+
+| Key | Action |
+| :- | :- |
+| `<leader>sp` | Toggle Spectre (project) |
+| `<leader>sP` | Spectre on current file |
+| `<leader>sp` (visual) | Spectre with selection |
+
+### Buffers (top bufferline)
+
+| Key | Action |
+| :- | :- |
+| `<Tab>` / `<S-Tab>` | Next / previous buffer |
+| `<leader>bd` / `<leader>bD` | Delete / force-delete buffer |
+| `<leader>bo` | Close other buffers |
+| `<leader>bl` / `<leader>bh` | Close to right / left |
+| `<leader>bp` | Pick & close (interactive) |
+| `<leader>bP` | Pin / unpin |
+
+### Harpoon
+
+| Key | Action |
+| :- | :- |
+| `<leader>ha` | Add current file |
+| `<leader>hh` | Toggle quick menu |
+| `<leader>1` … `<leader>4` | Jump to file 1..4 |
+| `<C-S-N>` / `<C-S-P>` | Next / previous harpoon item |
+
+### Windows
+
+| Key | Action |
+| :- | :- |
+| `<C-h/j/k/l>` | Move focus left / down / up / right |
+| `<leader>wv` / `<leader>ws` | Vertical / horizontal split |
+| `<leader>wq` / `<leader>wo` | Close current / close others |
+| `<leader>w=` | Equalize sizes |
+| `<A-h/j/k/l>` | Resize current window (smart-splits) |
+
+### LSP / Code (in source files)
+
+| Key | Action |
+| :- | :- |
+| `K` | Hover documentation |
+| `grd` | Go to **D**efinition |
+| `grr` | Find **R**eferences |
+| `gri` | Go to **I**mplementation |
+| `grD` | Go to **D**eclaration |
+| `grt` | Go to **T**ype definition |
+| `grn` | **R**e**n**ame symbol |
+| `gra` | Code **A**ction |
+| `gO` / `gW` | Document / workspace symbols |
+| `<leader>ch` | Toggle inlay hints |
+| `[d` / `]d` | Previous / next diagnostic |
+
+Format-on-save is handled by [conform.nvim](https://github.com/stevearc/conform.nvim).
+
+### Diagnostics (Trouble)
+
+| Key | Action |
+| :- | :- |
+| `<leader>xx` | Workspace diagnostics |
+| `<leader>xX` | Buffer diagnostics |
+| `<leader>xs` | Symbols panel |
+| `<leader>xl` | LSP refs/defs side panel |
+| `<leader>xt` | TODO comments list |
+| `<leader>xq` | Diagnostics → location list |
+
+### Git
+
+| Key | Action |
+| :- | :- |
+| `<leader>gg` (or `<leader>lg`) | lazygit (floating terminal) |
+| `<leader>gd` / `<leader>gD` | DiffviewOpen / Close |
+| `<leader>gh` / `<leader>gH` | File history (repo / current file) |
+| `<leader>hs` | Stage hunk |
+| `<leader>hr` | Reset hunk |
+| `<leader>hp` | Preview hunk |
+| `<leader>hb` | Blame line |
+| `<leader>hd` | Diff against index |
+| `]c` / `[c` | Next / previous hunk (in diffview) |
+
+### Terminal
+
+| Key | Action |
+| :- | :- |
+| `<leader>tt` | Toggle floating terminal |
+| `<leader>tf` / `<leader>th` / `<leader>tv` | Float / horizontal / vertical |
+| `<Esc><Esc>` | Exit terminal-insert mode |
+
+### Motion (Flash)
+
+| Key | Action |
+| :- | :- |
+| `s` | Flash jump (2-char + label) |
+| `S` | Flash by treesitter node |
+| `r` (operator-pending) | Remote flash, e.g. `dr` to delete a remote token |
+
+### Treesitter text objects
+
+Use as **operator + textobject**, e.g. `daf` deletes a function, `vif` selects inside a function, `cic` changes inside a class.
+
+| Object | Means |
+| :- | :- |
+| `af` / `if` | a / inside function |
+| `ac` / `ic` | a / inside class |
+| `aa` / `ia` | a / inside argument/parameter |
+| `ai` / `ii` | a / inside conditional |
+| `al` / `il` | a / inside loop |
+
+Plus jumps: `]f` / `[f` next/prev function, `]c` / `[c` next/prev class. Swap parameters: `<leader>cs` / `<leader>cS`.
+
+### Mini text editing
+
+| Key | Action |
+| :- | :- |
+| `gcc` / `gc{motion}` | Toggle comment line / motion (`gcap` paragraph) |
+| `gc` (visual) | Comment selection |
+| `saiw)` | Surround add: inside word with `(` `)` |
+| `sd"` | Surround delete: `"` |
+| `sr({` | Surround replace `(` with `{` |
+
+### Quality of life
+
+| Key | Action |
+| :- | :- |
+| `<C-s>` | Save file (n / i / v) |
+| `<Esc>` | Clear search highlight |
+| `<C-d>` / `<C-u>` | Half-page down / up (auto-centered) |
+| `n` / `N` | Next / prev search match (auto-centered) |
+| `J` / `K` (visual) | Move selected lines down / up |
+| `<` / `>` (visual) | Indent and keep selection |
+| `<leader>Q` | Force quit-all |
+| `<C-space>` / `<BS>` | Treesitter incremental selection: expand / shrink |
+
+### Startup dashboard (snacks.nvim)
+
+When you launch `nvim` with no file:
+
+| Key | Action |
+| :- | :- |
+| `f` | Find file |
+| `r` | Recent files |
+| `g` | Live grep |
+| `c` | Edit Neovim config |
+| `s` | Restore session |
+| `L` | Open `:Lazy` |
+| `q` | Quit |
+
 ### FAQ
 
 * What should I do if I already have a pre-existing Neovim configuration?

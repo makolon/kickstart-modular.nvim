@@ -1,27 +1,33 @@
 return {
   'akinsho/toggleterm.nvim',
   version = '*',
+  lazy = false,
+  keys = {
+    { '<leader>tt', '<cmd>ToggleTerm<cr>',                   desc = 'Terminal: toggle (horizontal)' },
+    { '<leader>tf', '<cmd>ToggleTerm direction=float<cr>',   desc = 'Terminal: float' },
+    { '<leader>th', '<cmd>ToggleTerm direction=horizontal size=15<cr>', desc = 'Terminal: horizontal' },
+    { '<leader>tv', '<cmd>ToggleTerm direction=vertical size=80<cr>',   desc = 'Terminal: vertical' },
+    { '<leader>gg', function() _lazygit_toggle() end,        desc = 'Git: lazygit (float)' },
+    { '<leader>lg', function() _lazygit_toggle() end,        desc = 'Git: lazygit (alias)' },
+  },
   config = function()
     require('toggleterm').setup {
-      -- size can be a number or function which is passed the current terminal
-      size = 20,
-      open_mapping = [[<leader>tt]], -- or { [[<c-\>]], [[<c-¥>]] } if you also use a Japanese keyboard.
-      hide_numbers = true, -- hide the number column in toggleterm buffers
+      size = 15,
+      open_mapping = [[<leader>tt]],
+      hide_numbers = true,
       shade_filetypes = {},
-      autochdir = false, -- when neovim changes it current directory the terminal will change it's own when next it's opened
-      shade_terminals = true, -- NOTE: this option takes priority over highlights specified so if you specify Normal highlights you should set this to false
+      autochdir = false,
+      shade_terminals = true,
       start_in_insert = true,
-      insert_mappings = true, -- whether or not the open mapping applies in insert mode
-      terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
+      insert_mappings = true,
+      terminal_mappings = true,
       persist_size = true,
-      persist_mode = true, -- if set to true (default) the previous terminal mode will be remembered
-      direction = 'float',
-      close_on_exit = true, -- close the terminal window when the process exits
-      clear_env = false, -- use only environmental variables from `env`, passed to jobstart()
-      -- Change the default shell. Can be a string or a function returning a string
+      persist_mode = true,
+      direction = 'horizontal',
+      close_on_exit = true,
+      clear_env = false,
       shell = vim.o.shell,
-      auto_scroll = true, -- automatically scroll to the bottom on terminal output
-      -- This field is only relevant if direction is set to 'float'
+      auto_scroll = true,
       float_opts = {
         border = 'curved',
         winblend = 3,
@@ -29,18 +35,22 @@ return {
       },
       winbar = {
         enabled = false,
-        name_formatter = function(term) --  term: Terminal
+        name_formatter = function(term)
           return term.name
         end,
       },
     }
-    local Terminal = require('toggleterm.terminal').Terminal
-    local lazygit = Terminal:new { cmd = 'lazygit', hidden = true }
 
-    function _lazygit_toggle()
+    local Terminal = require('toggleterm.terminal').Terminal
+    local lazygit = Terminal:new {
+      cmd = 'lazygit',
+      hidden = true,
+      direction = 'float',
+      float_opts = { border = 'curved' },
+    }
+
+    function _G._lazygit_toggle()
       lazygit:toggle()
     end
-
-    vim.api.nvim_set_keymap('n', '<leader>lg', '<cmd>lua _lazygit_toggle()<CR>', { noremap = true, silent = true })
   end,
 }

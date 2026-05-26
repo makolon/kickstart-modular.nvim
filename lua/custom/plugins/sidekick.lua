@@ -2,7 +2,7 @@
 return {
   {
     'folke/sidekick.nvim',
-    event = 'VeryLazy',
+    lazy = false,
 
     -- NOTE:
     -- sidekick.nvim requires Neovim >= 0.11.2.
@@ -15,14 +15,14 @@ return {
       opts.nes = opts.nes or {}
       opts.nes.enabled = false
 
-      -- Persist CLI sessions via tmux (works nicely with your tmux workflow).
-      -- "create" can be "split" or "window" depending on preference.
+      -- Use Neovim's built-in terminal on the right side (VSCode-like layout).
       opts.cli = opts.cli or {}
+      opts.cli.win = vim.tbl_deep_extend('force', opts.cli.win or {}, {
+        layout = 'right',
+        split = { width = 80 },
+      })
       opts.cli.mux = vim.tbl_deep_extend('force', opts.cli.mux or {}, {
-        enabled = true,
-        backend = 'tmux',
-        create = 'split',
-        split = { size = 0.33 },
+        enabled = false,
       })
 
       -- Add a couple of practical prompts.

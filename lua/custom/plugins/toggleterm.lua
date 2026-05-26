@@ -1,9 +1,9 @@
 return {
   'akinsho/toggleterm.nvim',
   version = '*',
-  cmd = { 'ToggleTerm', 'TermExec' },
+  lazy = false,
   keys = {
-    { '<leader>tt', '<cmd>ToggleTerm<cr>',                   desc = 'Terminal: toggle (float)' },
+    { '<leader>tt', '<cmd>ToggleTerm<cr>',                   desc = 'Terminal: toggle (horizontal)' },
     { '<leader>tf', '<cmd>ToggleTerm direction=float<cr>',   desc = 'Terminal: float' },
     { '<leader>th', '<cmd>ToggleTerm direction=horizontal size=15<cr>', desc = 'Terminal: horizontal' },
     { '<leader>tv', '<cmd>ToggleTerm direction=vertical size=80<cr>',   desc = 'Terminal: vertical' },
@@ -12,7 +12,7 @@ return {
   },
   config = function()
     require('toggleterm').setup {
-      size = 20,
+      size = 15,
       open_mapping = [[<leader>tt]],
       hide_numbers = true,
       shade_filetypes = {},
@@ -23,7 +23,7 @@ return {
       terminal_mappings = true,
       persist_size = true,
       persist_mode = true,
-      direction = 'float',
+      direction = 'horizontal',
       close_on_exit = true,
       clear_env = false,
       shell = vim.o.shell,

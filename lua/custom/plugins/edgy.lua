@@ -18,6 +18,31 @@ return {
       end,
     })
   end,
+  config = function(_, opts)
+    require('edgy').setup(opts)
+
+    local sidebar_ft = { ['neo-tree'] = true, toggleterm = true, sidekick = true }
+    vim.api.nvim_create_autocmd('QuitPre', {
+      group = vim.api.nvim_create_augroup('edgy_auto_quit', { clear = true }),
+      callback = function()
+        local dominated = 0
+        local real = 0
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+          if vim.api.nvim_win_get_config(win).relative == '' then
+            local ft = vim.bo[vim.api.nvim_win_get_buf(win)].filetype
+            if sidebar_ft[ft] then
+              dominated = dominated + 1
+            else
+              real = real + 1
+            end
+          end
+        end
+        if real <= 1 then
+          vim.cmd 'qa'
+        end
+      end,
+    })
+  end,
   opts = {
     animate = { enabled = false },
     left = {

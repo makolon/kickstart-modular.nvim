@@ -5,13 +5,14 @@ return {
     'nvim-neo-tree/neo-tree.nvim',
     optional = true,
     init = function()
-      vim.api.nvim_create_autocmd('VimEnter', {
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'VeryLazy',
         group = vim.api.nvim_create_augroup('vscode_layout', { clear = true }),
         callback = function()
           local function setup_layout()
             vim.g._layout_loading = true
 
-            pcall(vim.cmd, 'Neotree show')
+            vim.cmd 'Neotree show'
 
             vim.defer_fn(function()
               pcall(vim.cmd, 'ToggleTerm direction=horizontal')
@@ -39,12 +40,11 @@ return {
             end, 900)
           end
 
-          -- If Lazy's window is open, wait for it to close before setting up
+          -- If Lazy's window is open, wait for it to close
           local lazy_win_open = false
           for _, win in ipairs(vim.api.nvim_list_wins()) do
             local buf = vim.api.nvim_win_get_buf(win)
-            local ft = vim.bo[buf].filetype
-            if ft == 'lazy' then
+            if vim.bo[buf].filetype == 'lazy' then
               lazy_win_open = true
               break
             end
@@ -64,7 +64,7 @@ return {
                 end
                 if not still_open then
                   vim.defer_fn(setup_layout, 100)
-                  return true -- delete this autocmd
+                  return true
                 end
               end,
             })

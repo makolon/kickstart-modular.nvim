@@ -19,6 +19,33 @@ return {
     })
   end,
   config = function(_, opts)
+    -- Sync actual window sizes into edgy state before edgy recalculates,
+    -- enabling mouse-drag resize of edgebar panels.
+    vim.api.nvim_create_autocmd('WinResized', {
+      group = vim.api.nvim_create_augroup('edgy_mouse_resize', { clear = true }),
+      callback = function()
+        local ok, Config = pcall(require, 'edgy.config')
+        if not ok then return end
+        for _, pos in ipairs({ 'left', 'right', 'bottom', 'top' }) do
+          local edgebar = Config.layout[pos]
+          if edgebar and #edgebar.wins > 0 then
+            for _, win in ipairs(edgebar.wins) do
+              if win:is_valid() then
+                local dim = edgebar.vertical and 'width' or 'height'
+                local actual = vim.api['nvim_win_get_' .. dim](win.win)
+                vim.w[win.win]['edgy_' .. dim] = actual
+              end
+            end
+            local first = edgebar.wins[1]
+            if first and first:is_valid() then
+              local dim = edgebar.vertical and 'width' or 'height'
+              edgebar.size = vim.api['nvim_win_get_' .. dim](first.win)
+            end
+          end
+        end
+      end,
+    })
+
     require('edgy').setup(opts)
 
     local sidebar_ft = { ['neo-tree'] = true, toggleterm = true, sidekick = true }
@@ -45,6 +72,9 @@ return {
   end,
   opts = {
     animate = { enabled = false },
+    wo = {
+      winfixwidth = false,
+    },
     left = {
       {
         title = 'Explorer',

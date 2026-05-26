@@ -8,10 +8,14 @@ return {
       group = vim.api.nvim_create_augroup('edgy_tag_sidekick', { clear = true }),
       callback = function(ev)
         vim.defer_fn(function()
-          if not vim.api.nvim_buf_is_valid(ev.buf) then return end
-          if vim.bo[ev.buf].filetype == 'toggleterm' then return end
+          if not vim.api.nvim_buf_is_valid(ev.buf) then
+            return
+          end
+          if vim.bo[ev.buf].filetype == 'toggleterm' then
+            return
+          end
           local name = vim.api.nvim_buf_get_name(ev.buf)
-          if name:match('claude') or name:match('codex') or name:match('sidekick') then
+          if name:match 'claude' or name:match 'codex' or name:match 'sidekick' then
             vim.bo[ev.buf].filetype = 'sidekick'
           end
         end, 100)
@@ -25,8 +29,10 @@ return {
       group = vim.api.nvim_create_augroup('edgy_mouse_resize', { clear = true }),
       callback = function()
         local ok, Config = pcall(require, 'edgy.config')
-        if not ok then return end
-        for _, pos in ipairs({ 'left', 'right', 'bottom', 'top' }) do
+        if not ok then
+          return
+        end
+        for _, pos in ipairs { 'left', 'right', 'bottom', 'top' } do
           local edgebar = Config.layout[pos]
           if edgebar and #edgebar.wins > 0 then
             for _, win in ipairs(edgebar.wins) do
@@ -97,7 +103,7 @@ return {
       {
         title = 'Claude',
         ft = 'sidekick',
-        size = { width = 40 },
+        size = { width = 80 },
       },
     },
   },

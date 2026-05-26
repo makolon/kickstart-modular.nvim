@@ -17,6 +17,13 @@ return {
       end,
       offsets = {
         {
+          filetype = 'neo-tree',
+          text = 'Explorer',
+          highlight = 'Directory',
+          text_align = 'left',
+          separator = true,
+        },
+        {
           filetype = 'oil',
           text = 'Files',
           highlight = 'Directory',

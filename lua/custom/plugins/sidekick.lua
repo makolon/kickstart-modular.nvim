@@ -19,7 +19,7 @@ return {
       opts.cli = opts.cli or {}
       opts.cli.win = vim.tbl_deep_extend('force', opts.cli.win or {}, {
         layout = 'right',
-        split = { width = 80 },
+        split = { width = 40 },
       })
       opts.cli.mux = vim.tbl_deep_extend('force', opts.cli.mux or {}, {
         enabled = false,

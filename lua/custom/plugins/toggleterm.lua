@@ -22,7 +22,7 @@ return {
       insert_mappings = true,
       terminal_mappings = true,
       persist_size = true,
-      persist_mode = true,
+      persist_mode = false,
       direction = 'horizontal',
       close_on_exit = true,
       clear_env = false,
@@ -40,6 +40,18 @@ return {
         end,
       },
     }
+
+    vim.api.nvim_create_autocmd({ 'BufEnter', 'WinEnter', 'TermOpen' }, {
+      pattern = 'term://*',
+      callback = function()
+        if vim.g._layout_loading then return end
+        if vim.bo.buftype == 'terminal' then
+          vim.schedule(function()
+            vim.cmd 'startinsert'
+          end)
+        end
+      end,
+    })
 
     local Terminal = require('toggleterm.terminal').Terminal
     local lazygit = Terminal:new {

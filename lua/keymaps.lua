@@ -84,6 +84,16 @@ map('n', '<C-l>', '<C-w>l', { desc = 'Window: focus right' })
 map('n', '<C-j>', '<C-w>j', { desc = 'Window: focus below' })
 map('n', '<C-k>', '<C-w>k', { desc = 'Window: focus above' })
 
+map('t', '<C-h>', '<C-\\><C-n><C-w>h', { desc = 'Window: focus left' })
+map('t', '<C-l>', '<C-\\><C-n><C-w>l', { desc = 'Window: focus right' })
+map('t', '<C-j>', '<C-\\><C-n><C-w>j', { desc = 'Window: focus below' })
+map('t', '<C-k>', '<C-\\><C-n><C-w>k', { desc = 'Window: focus above' })
+
+map('i', '<C-h>', '<Esc><C-w>h', { desc = 'Window: focus left' })
+map('i', '<C-l>', '<Esc><C-w>l', { desc = 'Window: focus right' })
+map('i', '<C-j>', '<Esc><C-w>j', { desc = 'Window: focus below' })
+map('i', '<C-k>', '<Esc><C-w>k', { desc = 'Window: focus above' })
+
 map('n', '<leader>wv', '<cmd>vsplit<CR>',  { desc = 'Window: vertical split' })
 map('n', '<leader>ws', '<cmd>split<CR>',   { desc = 'Window: horizontal split' })
 map('n', '<leader>wq', '<C-w>q',           { desc = 'Window: close' })

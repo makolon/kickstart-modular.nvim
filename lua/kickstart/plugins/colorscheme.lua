@@ -43,6 +43,11 @@ return {
     config = function(_, opts)
       require('catppuccin').setup(opts)
       vim.cmd.colorscheme 'catppuccin-mocha'
+
+      local base = '#1e1e2e'
+      local dim = '#181825'
+      vim.api.nvim_set_hl(0, 'NormalNC', { bg = dim })
+      vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#45475a', bg = base })
     end,
   },
 }

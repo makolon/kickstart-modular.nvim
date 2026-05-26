@@ -88,3 +88,19 @@ vim.o.foldenable = true
 -- shada history
 vim.opt.shada:remove '<'
 vim.opt.shada:append '<10000'
+
+-- Dim inactive windows for clearer focus indication
+vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter', 'FocusGained' }, {
+  group = vim.api.nvim_create_augroup('focus_highlight', { clear = true }),
+  callback = function()
+    vim.wo.winhighlight = ''
+    vim.wo.cursorline = true
+  end,
+})
+vim.api.nvim_create_autocmd({ 'WinLeave', 'BufLeave', 'FocusLost' }, {
+  group = vim.api.nvim_create_augroup('focus_highlight_leave', { clear = true }),
+  callback = function()
+    vim.wo.winhighlight = 'Normal:NormalNC,CursorLine:NormalNC'
+    vim.wo.cursorline = false
+  end,
+})

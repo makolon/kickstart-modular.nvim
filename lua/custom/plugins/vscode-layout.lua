@@ -9,35 +9,70 @@ return {
         pattern = 'VeryLazy',
         group = vim.api.nvim_create_augroup('vscode_layout', { clear = true }),
         callback = function()
+          -- Move focus to a real editor window (normal, modifiable buffer).
+          -- Returns true if such a window was found and focused.
+          local function focus_editor()
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_get_config(win).relative == '' then
+                local buf = vim.api.nvim_win_get_buf(win)
+                local ft = vim.bo[buf].filetype
+                local bt = vim.bo[buf].buftype
+                if ft ~= 'neo-tree' and ft ~= 'toggleterm' and ft ~= 'sidekick' and ft ~= 'edgy' and bt ~= 'terminal' then
+                  vim.api.nvim_set_current_win(win)
+                  pcall(vim.cmd, 'stopinsert')
+                  return true
+                end
+              end
+            end
+            return false
+          end
+
+          -- Whether a sidekick (Claude) terminal is actually running.
+          local function claude_running()
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              local buf = vim.api.nvim_win_get_buf(win)
+              if vim.bo[buf].buftype == 'terminal' and (vim.b[buf].sidekick_cli ~= nil or vim.bo[buf].filetype == 'sidekick') then
+                return true
+              end
+            end
+            return false
+          end
+
+          -- Start Claude on the right. Crucially, focus a normal editor window
+          -- FIRST so sidekick's `jobstart(term=true)` never runs while the current
+          -- window holds a non-modifiable buffer (which triggers E21 over SSH,
+          -- where the slower startup lets edgy's relayout race the terminal setup).
+          -- Retries a few times to absorb SSH/remote timing jitter.
+          local function show_claude(attempts)
+            attempts = attempts or 1
+            focus_editor()
+            local ok, cli = pcall(require, 'sidekick.cli')
+            if ok then
+              pcall(cli.show, { name = 'claude', focus = false })
+            end
+            vim.defer_fn(function()
+              if not claude_running() and attempts < 5 then
+                show_claude(attempts + 1)
+              else
+                focus_editor()
+                vim.g._layout_loading = false
+              end
+            end, 500)
+          end
+
           local function setup_layout()
             vim.g._layout_loading = true
 
             vim.cmd 'Neotree show'
 
+            -- Bottom terminal first, then Claude LAST (after focusing the editor).
             vim.defer_fn(function()
               pcall(vim.cmd, 'ToggleTerm direction=horizontal')
-            end, 300)
 
-            vim.defer_fn(function()
-              local ok, cli = pcall(require, 'sidekick.cli')
-              if ok then
-                pcall(cli.show, { name = 'claude', focus = false })
-              end
-            end, 600)
-
-            vim.defer_fn(function()
-              for _, win in ipairs(vim.api.nvim_list_wins()) do
-                local buf = vim.api.nvim_win_get_buf(win)
-                local ft = vim.bo[buf].filetype
-                local bt = vim.bo[buf].buftype
-                if ft ~= 'neo-tree' and ft ~= 'toggleterm' and ft ~= 'sidekick' and bt ~= 'terminal' then
-                  vim.api.nvim_set_current_win(win)
-                  vim.cmd 'stopinsert'
-                  break
-                end
-              end
-              vim.g._layout_loading = false
-            end, 900)
+              vim.defer_fn(function()
+                show_claude()
+              end, 400)
+            end, 400)
           end
 
           -- If Lazy's window is open, wait for it to close

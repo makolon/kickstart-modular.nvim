@@ -115,13 +115,29 @@ return {
             return false
           end
 
-          -- Start Claude on the right. Two preconditions must hold to avoid the
-          -- E21 race (especially over SSH, where a *second* nvim's startup is
-          -- slowed by the first nvim's running Claude and overruns fixed delays):
-          --   1) focus is on a real modifiable editor window, and
-          --   2) edgy's relayout has gone idle (no pending UI churn).
-          -- We poll for these instead of trusting fixed timers, and re-check
-          -- after launching, retrying only if Claude did not actually come up.
+          -- Poll until Claude's terminal is actually up, then hand focus back to
+          -- the editor. This NEVER re-issues the launch — it only waits — so we
+          -- can't spawn a second Claude or re-pop any UI while the first one is
+          -- still starting (the old "flickering" behaviour came from re-calling
+          -- cli.show on every tick).
+          local function wait_until_running(attempts)
+            attempts = attempts or 1
+            if claude_running() or attempts >= 20 then
+              ensure_editor()
+              vim.g._layout_loading = false
+            else
+              vim.defer_fn(function()
+                wait_until_running(attempts + 1)
+              end, 300)
+            end
+          end
+
+          -- Start Claude on the right, exactly once. To avoid the E21 race we
+          -- first make sure focus sits on a real modifiable editor window (or the
+          -- dashboard, whose 'modifiable' we flip on just for the call so
+          -- sidekick's `jobstart(term=true)` never fires against a read-only
+          -- current buffer). After issuing the single launch we only POLL for it
+          -- to come up — we do not retry the launch itself.
           local function show_claude(attempts)
             attempts = attempts or 1
 
@@ -141,12 +157,7 @@ return {
               return
             end
 
-            -- Launch Claude. sidekick's `jobstart(term=true)` must not fire
-            -- while the current window holds a non-modifiable buffer (E21).
-            -- The current window is now either a real editor or the dashboard;
-            -- for the dashboard (non-modifiable) we flip 'modifiable' on just
-            -- for the call and restore it, so the menu stays read-only and no
-            -- extra pane is created (which would itself race edgy's relayout).
+            -- Issue the launch a single time, E21-safely.
             local ok, cli = pcall(require, 'sidekick.cli')
             local cur = vim.api.nvim_get_current_win()
             if ok and (is_editor_win(cur) or is_placeholder_win(cur)) then
@@ -161,14 +172,8 @@ return {
               end
             end
 
-            vim.defer_fn(function()
-              if not claude_running() and attempts < 12 then
-                show_claude(attempts + 1)
-              else
-                ensure_editor()
-                vim.g._layout_loading = false
-              end
-            end, 500)
+            -- From here on, just wait for it — never relaunch.
+            wait_until_running()
           end
 
           -- Wait until the bottom terminal has actually opened (or a budget

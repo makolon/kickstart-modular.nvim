@@ -11,6 +11,31 @@ return {
     opts = function(_, opts)
       opts = opts or {}
 
+      -- ROOT FIX for "which Claude to select" flicker + E21 over SSH:
+      --
+      -- We run every CLI in Neovim's own terminal (`mux.enabled = false` below),
+      -- so each nvim owns its Claude as an in-process job. BUT sidekick's session
+      -- discovery still registers the tmux/zellij backends whenever those binaries
+      -- exist, and `Session.sessions()` then walks the process tree of EVERY
+      -- multiplexer pane looking for CLI tools. Inside tmux over SSH a *second*
+      -- nvim therefore discovers the *first* nvim's Claude as an "external"
+      -- session, so `cli.show{name='claude'}` sees 2 candidates, skips the
+      -- single-match auto-launch, and pops the "Select CLI tool" picker instead
+      -- (the flickering tab) — and the layout's retry loop re-pops it every 500ms.
+      --
+      -- Drop those discovery backends so each nvim only ever sees and launches its
+      -- OWN Claude. Idempotent and applied before sidekick.setup() runs.
+      local Session = require 'sidekick.cli.session'
+      if not Session._no_mux_discovery then
+        Session._no_mux_discovery = true
+        local orig_setup = Session.setup
+        Session.setup = function()
+          orig_setup()
+          Session.backends.tmux = nil
+          Session.backends.zellij = nil
+        end
+      end
+
       -- Disable Copilot NES (we only use the CLI features here).
       opts.nes = opts.nes or {}
       opts.nes.enabled = false

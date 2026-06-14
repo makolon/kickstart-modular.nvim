@@ -26,12 +26,48 @@ return {
               and vim.bo[buf].modifiable
           end
 
-          -- Focus a real, modifiable editor window. If none exists (e.g. nvim
-          -- opened straight onto a directory), create a scratch one so that
-          -- sidekick's `jobstart(term=true)` is NEVER issued while the current
-          -- window holds a non-modifiable buffer (the direct cause of E21).
-          -- Returns the focused window, or nil if it could not be guaranteed.
+          -- Start/landing screens (snacks dashboard, alpha, mini.starter…)
+          -- sit in the center on a NON-modifiable buffer. We KEEP them as the
+          -- center content, so they count as a valid "editor area" to focus —
+          -- we just must not run sidekick's jobstart while one is the current
+          -- window without first making it modifiable (see show_claude).
+          local PLACEHOLDER_FT = {
+            snacks_dashboard = true,
+            dashboard = true,
+            alpha = true,
+            starter = true,
+            ministarter = true,
+          }
+
+          -- True if `win` is a non-floating window holding a start/landing
+          -- screen (the dashboard).
+          local function is_placeholder_win(win)
+            if vim.api.nvim_win_get_config(win).relative ~= '' then
+              return false
+            end
+            return PLACEHOLDER_FT[vim.bo[vim.api.nvim_win_get_buf(win)].filetype] == true
+          end
+
+          -- Turn the current window into a throwaway scratch editor. Kept out
+          -- of the bufferline (no stray `[No Name]` tab) and wiped once a real
+          -- file replaces it.
+          local function make_scratch()
+            local scratch = vim.api.nvim_get_current_buf()
+            vim.bo[scratch].buflisted = false
+            vim.bo[scratch].bufhidden = 'wipe'
+            pcall(vim.cmd, 'stopinsert')
+            return vim.api.nvim_get_current_win()
+          end
+
+          -- Focus the center editor area. Preference order:
+          --   1) a real, modifiable editor window;
+          --   2) the dashboard/start screen (kept as-is — NOT replaced, so the
+          --      Find File / Open Folder / Recent Files menu survives);
+          --   3) otherwise (e.g. nvim opened straight onto a directory) create
+          --      a scratch window so we never leave focus on a sidebar.
+          -- Returns the focused window, or nil if none could be guaranteed.
           local function ensure_editor()
+            -- 1) A real editor window already exists: just focus it.
             for _, win in ipairs(vim.api.nvim_list_wins()) do
               if is_editor_win(win) then
                 vim.api.nvim_set_current_win(win)
@@ -39,7 +75,19 @@ return {
                 return win
               end
             end
-            -- No editor window exists: create one without clobbering a sidebar.
+
+            -- 2) Keep the dashboard in the center; just focus its window. The
+            -- E21 guard around jobstart is handled by show_claude, so we do not
+            -- need to manufacture a scratch pane next to it.
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if is_placeholder_win(win) then
+                vim.api.nvim_set_current_win(win)
+                pcall(vim.cmd, 'stopinsert')
+                return win
+              end
+            end
+
+            -- 3) No editor or dashboard window: create one without clobbering a sidebar.
             -- If the current window is a managed/special panel, split off a new
             -- scratch window; otherwise just swap in a scratch buffer here.
             local cur = vim.api.nvim_get_current_win()
@@ -51,8 +99,7 @@ return {
               or curft == 'edgy'
             local ok = pcall(vim.cmd, sidebar and 'botright vsplit | enew' or 'enew')
             if ok and is_editor_win(vim.api.nvim_get_current_win()) then
-              pcall(vim.cmd, 'stopinsert')
-              return vim.api.nvim_get_current_win()
+              return make_scratch()
             end
             return nil
           end
@@ -94,9 +141,24 @@ return {
               return
             end
 
+            -- Launch Claude. sidekick's `jobstart(term=true)` must not fire
+            -- while the current window holds a non-modifiable buffer (E21).
+            -- The current window is now either a real editor or the dashboard;
+            -- for the dashboard (non-modifiable) we flip 'modifiable' on just
+            -- for the call and restore it, so the menu stays read-only and no
+            -- extra pane is created (which would itself race edgy's relayout).
             local ok, cli = pcall(require, 'sidekick.cli')
-            if ok and is_editor_win(vim.api.nvim_get_current_win()) then
+            local cur = vim.api.nvim_get_current_win()
+            if ok and (is_editor_win(cur) or is_placeholder_win(cur)) then
+              local buf = vim.api.nvim_win_get_buf(cur)
+              local was_modifiable = vim.bo[buf].modifiable
+              if not was_modifiable then
+                vim.bo[buf].modifiable = true
+              end
               pcall(cli.show, { name = 'claude', focus = false })
+              if not was_modifiable and vim.api.nvim_buf_is_valid(buf) then
+                vim.bo[buf].modifiable = false
+              end
             end
 
             vim.defer_fn(function()
